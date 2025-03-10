@@ -2,7 +2,7 @@ This project contains WINBUGS and R code for the VenUS 6 Network Meta-Analysis (
 
 1. WINBUGS_basecase: The NMA model written for WinBUGS.
 2. V6_AD_network2: Data table for studies with aggregated data.
-3. VenUS6_basecase: R code for data arrangement to feed into the NMA model and run the model using the R2WiBUGS package 
+3. VenUS6_basecase: R code for data arrangement to feed into the NMA model and run the model using the R2WinBUGS package 
 Note that due to data-sharing agreements, the Individual Patient Data (IPD) for VenUS I and VenUS 6 are not included.
 
 
