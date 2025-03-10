@@ -635,7 +635,7 @@ return(c(mean_C, mean_U, inc_C, inc_U, NMB, INMB))
 
 
 
-Nsim1<-50
+Nsim1<-5000
 
 system.time(CE_out <- sapply(1:Nsim1,CEmodelSA))
 #CE_out
