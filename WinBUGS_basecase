@@ -1,0 +1,138 @@
+model { 
+
+### Model for ipd 1 ###
+
+for(i in 1:n.subjects1) {
+	t.obs1[i] ~ dlnorm(zu1[i], shape)I(t.cen1[i],)	
+	zu1[i] <- mu1 + betac1[centre1[i]] + d[treat1[i]] - d[baseline1[i]] + 
+						beta_logarea * (logarea1[i] - mean(logarea1[])) + 
+						beta_logdurm * (logdurm1[i] - mean(logdurm1[]))
+	logarea1[i] ~ dnorm(a,b)
+	logdurm1[i] ~ dnorm(x,y)
+
+	temp1[i] <- index1[i]
+	temp2[i] <- id1[i]
+	temp3[i] <- study1[i]
+	
+	p1.hat[i] <-  phi((log(t.obs1[i]) - zu1[i]) * sqrt(shape))       
+	p1[i] <- phi((log(t.obs1[i]) - zu.ipd1) * sqrt(shape.ipd1))          
+	
+	dev1[i] <- (p1.hat[i] - p1[i]) * (p1.hat[i] - p1[i])
+	
+	}
+
+a~ dnorm(0,1.0E-3)
+b~ dgamma(1.0,0.01)
+x~ dnorm(0,1.0E-3)
+y~ dgamma(1.0,0.01)
+
+
+mu1~dnorm(0,1.0E-6)
+resdev1 <- sum(dev1[])
+
+for (i in 1:C1) {																					
+	betac1[i] ~ dnorm(0.0,taua)
+	}
+
+
+### Model for ipd 3 ###
+
+for(u in 1:n.subjects3) {
+	t.obs3[u] ~ dlnorm(zu3[u], shape)I(t.cen3[u],)	
+	zu3[u] <- mu3 + betac3[centre3[u]] + d[treat3[u]] - d[baseline3[u]] + 
+						beta_logarea * (logarea3[u] - mean(logarea3[])) + 
+						beta_logdurm * (logdurm3[u] - mean(logdurm3[]))  
+	
+	logarea3[u] ~ dnorm(dm3,ep3)
+	logdurm3[u] ~ dnorm(fm3,gp3)
+
+	temp7[u] <- index3[u]
+	temp8[u] <- id3[u]
+	temp9[u] <- study3[u]
+	
+	p3.hat[u] <-   phi((log(t.obs3[u]) - zu3[u]) * sqrt(shape))          
+	p3[u] <- phi((log(t.obs3[u]) - zu.ipd3) * sqrt(shape.ipd3))  
+
+
+	dev3[u] <- (p3.hat[u] - p3[u]) * (p3.hat[u] - p3[u])
+
+	}
+
+dm3~dnorm(0,1.0E-3)
+ep3~ dgamma(1.0,0.01)
+fm3~dnorm(0,1.0E-3)
+gp3~ dgamma(1.0,0.01)
+
+mu3 ~ dnorm(0,1.0E-6)
+resdev3 <- sum(dev3[])
+
+for (i in 1:C3) {																					
+	betac3[i] ~ dnorm(0.0,taua)
+	}
+
+beta_logarea ~ dnorm(0,1.0E-6)
+beta_logdurm ~ dnorm(0,1.0E-6)
+
+
+# Model for aggregate data #
+
+for(i in 1:n.agg.arm) {
+	r[i]~dbin(pa[i],n[i])
+	pa[i] <- phi((log(a.time[i]) - zu.a[i]) * sqrt(shape))
+	zu.a[i] <- mu.a[a.s[i]] + d[a.treat[i]] - d[a.base[i]]
+		
+	pa.obs[i] <- r[i] / n[i]
+	dev.ad[i] <- (pa.obs[i]  - pa[i]) * (pa.obs[i]  - pa[i])
+	}
+
+resdev.ad <- sum(dev.ad[])
+for(j in 1:n.agg.trials) {
+	mu.a[j]~dnorm(0,1.0E-6)
+	}
+
+### Model for combining all estimates of treatment effect  ###
+totresdev <- resdev1 +  resdev3 + resdev.ad
+shape ~ dgamma(1,1.0E-6)
+d[1]<-0
+for (k in 2:max.treat) {
+	d[k] ~ dnorm(0,1.0E-6)
+	}
+
+betac.new ~ dnorm(0.0,taua)
+taua ~ dgamma(0.1,1.0E-6)
+tauasq<- taua*taua
+centrevara<-1 / tauasq
+centresda<- sqrt(centrevara)
+
+# pairwise HRs
+
+for (c in 1:(max.treat-1)) {
+	for (k in (c + 1):max.treat) {
+	hr[c,k] <- 1/exp(d[k] - d[c])
+		}
+	}
+
+## SUCRA
+
+for (k in 1:max.treat) {
+
+	d_rank[k] <- 1/exp(d[k])
+	rk[k] <- max.treat+1-rank(d_rank[],k)
+	
+	for (j in 1:max.treat) {
+	effectiveness[k,j] <-equals(rk[k],j )
+					}
+		
+	}
+
+for (k in 1:max.treat) {
+for (j in 1:max.treat) {
+		cumeffectiveness[k,j] <- sum(effectiveness[k, 1:j])
+				}
+			}
+
+for (k in 1:max.treat) {
+SUCRA[k] <- sum(cumeffectiveness[k,1:(max.treat-1)])/(max.treat-1)
+}
+
+}
