@@ -9,8 +9,6 @@
 rm(list=ls(all=TRUE))
 
 set.seed(5)
-#install.packages("invgamma")
-#library(invgamma)
 library(survival)
 library(Matrix)
 library(stats)
@@ -69,15 +67,11 @@ age <- 70.25 #V6 Jan 25
 male <- 0.551 #new parameter, for utility estimates
 
 ## for FE
-#logarea <- 2.052119  #V6 Jan 25
-#logdurm <- 1.469  #V6 Jan 25
-#durm<- 13.46777 #V6 Jan 25
+logarea <- 2.052119  #V6 Jan 25
+logdurm <- 1.469  #V6 Jan 25
+durm<- 13.46777 #V6 Jan 25
 
 
-## 
-logarea <- 0  #V6 Jan 25
-logdurm <- 0  #V6 Jan 25
-durm<- 0 #V6 Jan 25
 ##
 ## PARAMETER TYPE: PROBABILITIES
 ##
@@ -195,22 +189,6 @@ u_unhealb <- u_unheal * (1 - u_unheal) / (u_se_unheal^2) - 1 - u_unheala
 #---------------------------------------------------------------
 
 mortutil_data<-read.table('C:/Users/tp994/Downloads/R/V6_mortality.txt',header=T,sep="\t",quote="\"",dec=".",fill=T,na.strings=c(""),as.is=1:3)
-
-
-### from Brown 2022 (V4)
-#number of people that died in 1998 with 77years in Scotland
-n_died_scot<- 2109
-#77 year population in Scotland in 1998
-N_scot<- 34688
-#proportion of people that died
-p_died<- n_died_scot/ N_scot
-rate_died<- -log(1- p_died)
-#Yearly probability - Using 3 month mortality rate from Brown et al 2002 of 3.7%
-mort_rate <- 3.7/100 * 4
-p_mort <- (1-exp(- mort_rate / 100))
-mort_ratio <- mort_rate / rate_died
-
-
 ## from VenUS 6
 mort_ratio <- 1.79
 
@@ -227,21 +205,7 @@ ProbMatrix<- matrix(data=NA, nrow=5000, ncol=11, dimnames=list(sims, c("beta_log
                     "hr3", "hr4", "hr5", "hr6", "hr7", "mu", "shape")))
 
 
-## for predictive RE
-for (i in 1:5000) {
-  ProbMatrix[i,1] <- MTC_coda[i + 55000, 2]
-  ProbMatrix[i,2] <- MTC_coda[i + 60000, 2]
-  
-  ProbMatrix[i,3] <- MTC_coda[i + 65000, 2]
-  ProbMatrix[i,4] <- MTC_coda[i + 615000, 2] ## SS
-  ProbMatrix[i,5] <- 1  ## HH
-  ProbMatrix[i,6] <- MTC_coda[i + 625000, 2] ### paste
-  ProbMatrix[i,7] <- MTC_coda[i + 645000, 2] ## 2LB
-  ProbMatrix[i,8] <- MTC_coda[i + 660000, 2]
-  ProbMatrix[i,9] <- 1
-  ProbMatrix[i,10] <- MTC_coda[i + 890000, 2]
-  ProbMatrix[i,11] <- MTC_coda[i + 895000, 2]
-}
+
 
 ### for FE
 for (i in 1:5000) {
@@ -259,61 +223,10 @@ for (i in 1:5000) {
   ProbMatrix[i,11] <- MTC_coda[i + 405000, 2]
 }
 
-### for FE Low and moderate RoB network
-for (i in 1:5000) {
-  ProbMatrix[i,1] <- MTC_coda[i + 25000, 2]
-  ProbMatrix[i,2] <- MTC_coda[i + 30000, 2]
-  
-  ProbMatrix[i,3] <- MTC_coda[i + 35000, 2]
-  ProbMatrix[i,4] <- MTC_coda[i + 65000, 2] ## SS
-  ProbMatrix[i,5] <- 1  ## HH
-  ProbMatrix[i,6] <- MTC_coda[i + 100000, 2] ### paste
-  ProbMatrix[i,7] <- MTC_coda[i + 70000, 2] ## 2LB
-  ProbMatrix[i,8] <- MTC_coda[i + 80000, 2]
-  ProbMatrix[i,9] <- 1
-  ProbMatrix[i,10] <- MTC_coda[i + 115000, 2]
-  ProbMatrix[i,11] <- MTC_coda[i + 120000, 2]
-}
-
-### for FE Low RoB network
-for (i in 1:5000) {
-  ProbMatrix[i,1] <- MTC_coda[i + 20000, 2]
-  ProbMatrix[i,2] <- MTC_coda[i + 25000, 2]
-  
-  ProbMatrix[i,3] <- MTC_coda[i + 30000, 2]
-  ProbMatrix[i,4] <- MTC_coda[i + 55000, 2] ## SS
-  ProbMatrix[i,5] <- 1  ## HH
-  ProbMatrix[i,6] <- MTC_coda[i + 55000, 2] ### paste
-  ProbMatrix[i,7] <- MTC_coda[i + 60000, 2] ## 2LB
-  ProbMatrix[i,8] <- MTC_coda[i + 65000, 2]
-  ProbMatrix[i,9] <- 1
-  ProbMatrix[i,10] <- MTC_coda[i + 85000, 2]
-  ProbMatrix[i,11] <- MTC_coda[i + 90000, 2]
-}
-
-### for FE Log logistic
-for (i in 1:5000) {
-  ProbMatrix[i,1] <- MTC_coda[i + 55000, 2]
-  ProbMatrix[i,2] <- MTC_coda[i + 60000, 2]
-  
-  ProbMatrix[i,3] <- MTC_coda[i + 65000, 2]
-  ProbMatrix[i,4] <- MTC_coda[i + 120000, 2] ## SS
-  ProbMatrix[i,5] <- 1  ## HH
-  ProbMatrix[i,6] <- MTC_coda[i + 130000, 2] ### paste
-  ProbMatrix[i,7] <- MTC_coda[i + 150000, 2] ## 2LB
-  ProbMatrix[i,8] <- MTC_coda[i + 165000, 2]
-  ProbMatrix[i,9] <- 1
-  ProbMatrix[i,10] <- MTC_coda[i + 395000, 2]
-  ProbMatrix[i,11] <- MTC_coda[i + 400000, 2]
-}
-
 ProbMatrix <- cbind(ProbMatrix, "hr1"=rep(1,5000))
 
 ## for Log normal, log logistic ###
 ProbMatrix <- cbind(ProbMatrix, "lambda_heal"= ProbMatrix[,"mu"] + ProbMatrix[,"betac.new"] + ProbMatrix[,"beta_logarea"] * logarea +  ProbMatrix[,"beta_logdurm"] * logdurm )
-### for Weibull ###
-ProbMatrix <- cbind(ProbMatrix, "lambda_heal"= exp(ProbMatrix[,"mu"] + ProbMatrix[,"betac.new"] + ProbMatrix[,"beta_logarea"] * logarea +  ProbMatrix[,"beta_logdurm"] * logdurm ))
-
 ProbMatrix<- cbind(ProbMatrix,  lv_gomp_ct, lv_gomp_gamma)
 ProbMatrix <- cbind(ProbMatrix, "lambda_recur"= ProbMatrix[,"lv_gomp_ct"]  )
 
