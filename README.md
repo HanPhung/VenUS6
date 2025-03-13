@@ -15,5 +15,6 @@ Additionally, the project includes R code and data for the VenUS 6 economic mode
 4. V6 mortality: Life table.
 5. coda1: The NMA output for relative treatment effectiveness (hazard ratio).
 6. Resource_use: Data tables for resource use.
+
 The economic model is runable.
 
