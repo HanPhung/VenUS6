@@ -15,7 +15,7 @@ library(stats)
 # install.packages("tidyverse")
 library(readxl)
 
-setwd("C:/Users/tp994/Downloads/R")
+setwd()
 #P=Treatment
 #1=4LB 
 #2=SSB
@@ -79,11 +79,11 @@ durm<- 13.46777 #V6 Jan 25
 #Recurrence 
 #STATA mean parameter estimates from a Log-normal survival distribution, without regressors
 ## keep the variable name gompertz for ease 
-gompertz_results<- read.table('C:/Users/tp994/Downloads/R/recur_lognormal.txt', header=T, sep="\t", quote="\"", 
+gompertz_results<- read.table('/recur_lognormal.txt', header=T, sep="\t", quote="\"", 
                             dec=".", fill=T, na.strings=c(""))
 
 #STATA cholesky decomposition matrix
-gompertz_chol<- read.table('C:/Users/tp994/Downloads/R/Chol_matrix.txt', header=T, sep="\t", quote="\"", 
+gompertz_chol<- read.table('/Chol_matrix.txt', header=T, sep="\t", quote="\"", 
                             dec=".", fill=T, na.strings=c(""))
 
 randnorm = array(NA, dim=c(Nsim,2))
@@ -105,50 +105,25 @@ for(i in 1:Nsim) {
 
 ## below whout SEis indeed alpha, and se_ is beta for Log normal distribution
 #Treatment cost per month once unhealed
-t_cost <- read_excel('C:/Users/tp994/Downloads/R/Resource_use.xlsx', sheet="Treatment_cost")
+t_cost <- read_excel('/Resource_use.xlsx', sheet="Treatment_cost")
 t_dur <- as.data.frame(c(t_cost[2,4], t_cost[6,4],  t_cost[3,4], 1, t_cost[5,4] , t_cost[1,4] , t_cost[4,4] )) ## TBC for SSB 
 se_t_dur <- as.data.frame(c(t_cost[2,5], t_cost[6,5],  t_cost[3,5], 1, t_cost[5,5] , t_cost[1,5] , t_cost[4,5]) ) ## TBC for SSB
 
 #Nurse visits #mean (se) per month once unhealed
-nurse <- read_excel('C:/Users/tp994/Downloads/R/Resource_use.xlsx', sheet="Nurse_visit")
+nurse <- read_excel('/Resource_use.xlsx', sheet="Nurse_visit")
 nursev <-as.data.frame( c(nurse[2,4], nurse[2,4],  nurse[3,4], nurse[2,4], nurse[5,4] , nurse[1,4] , nurse[4,4]) )# TBC for SSB
 se_nursev <- as.data.frame(c(nurse[2,5], nurse[2,5],  nurse[3,5], nurse[2,4], nurse[5,5] , nurse[1,5] , nurse[4,5] ) ) # TBC for SSB
 
 #Duration of nurse visit
-duration <- read_excel('C:/Users/tp994/Downloads/R/Resource_use.xlsx', sheet="Nurse_duration")
+duration <- read_excel('/Resource_use.xlsx', sheet="Nurse_duration")
 nurse_dur <- as.data.frame(c(duration[2,4], duration[6,4],  duration[3,4], duration[2,4], duration[5,4] , duration[1,4], duration[4,4] ))
 se_nurse_dur <- as.data.frame(c(duration[2,5], duration[6,5],  duration[3,5], duration[2,4], duration[5,5] , duration[1,5] , duration[4,5] ))
 
 #Unit cost of Band of nurse
-band <- read_excel('C:/Users/tp994/Downloads/R/Resource_use.xlsx', sheet="Nurse_band")
+band <- read_excel('/Resource_use.xlsx', sheet="Nurse_band")
 c_nurse <- as.data.frame(c(band[2,3], band[6,3],  band[3,3], band[2,3], band[5,3] , band[1,3] , band[4,3]))# TBC for SSB
 
-#Doctor visits #mean (se) number of doctor visits per month per patient
-#GP <- read_excel('C:/Users/tp994/Downloads/R/Resource_use.xlsx', sheet="GP")
-
-# Number of GP contact
-#GP_home <- as.data.frame(GP[1,2])
-#GP_home[1, 1] <- as.numeric(GP_home[1, 1])
-#GP_clinic <- data.frame(GP[2,2])
-#GP_clinic[1, 1] <- as.numeric(GP_clinic[1, 1])
-#Outpts <- as.data.frame(GP[3,2])
-#Outpts[1, 1] <- as.numeric(Outpts[1, 1])
-
-#se_GP_home <- as.data.frame(GP[1,3])
-#se_GP_home[1, 1] <- as.numeric(se_GP_home[1, 1])
-#se_GP_clinic <- as.data.frame(GP[2,3])
-#se_GP_clinic[1, 1] <- as.numeric(se_GP_clinic[1, 1])
-#se_Outpts <- as.data.frame(GP[3,3])
-#se_Outpts[1, 1] <- as.numeric(se_Outpts[1, 1])
-
-#cost of GP contact
-#c_GP_home <- as.data.frame(GP[1,4])
-#c_GP_home[1, 1] <- as.numeric(c_GP_home[1, 1])
-#c_GP_clinic <- as.data.frame(GP[2,4])
-#c_GP_clinic[1, 1] <- as.numeric(c_GP_clinic[1, 1])
-#c_Outpts <- as.data.frame(GP[3,4])
-#c_Outpts[1, 1] <- as.numeric(c_Outpts[1, 1])
-
+## GP
 GP_home <- log(0.37^2/sqrt(0.54^2+0.37^2))          
 se_GP_home <- sqrt(log(1+(0.54^2/0.37^2)))
 GP_clinic <-  log(0.03^2/sqrt(0.02^2+0.03^2) )               
@@ -188,7 +163,7 @@ u_unhealb <- u_unheal * (1 - u_unheal) / (u_se_unheal^2) - 1 - u_unheala
 ##### DATA 2: Mortality and Standard Population Utilities ######
 #---------------------------------------------------------------
 
-mortutil_data<-read.table('C:/Users/tp994/Downloads/R/V6_mortality.txt',header=T,sep="\t",quote="\"",dec=".",fill=T,na.strings=c(""),as.is=1:3)
+mortutil_data<-read.table('/V6_mortality.txt',header=T,sep="\t",quote="\"",dec=".",fill=T,na.strings=c(""),as.is=1:3)
 ## from VenUS 6
 mort_ratio <- 1.79
 
@@ -196,8 +171,7 @@ mort_ratio <- 1.79
 ##### DATA 4: Probability treatment is effective ######
 #-------------------------------------------------------
 
-#MTC_coda<-read.table('CHE_2012\\Projects\\HSciences\\VenUS4\\VenUS4_SM\\Report\\Phase2\\IncV4\\MTC_ADIPD9\\CODA_MTC.txt', header=F, sep="\t", quote="\"", dec=".", fill=T,na.strings=c(""),as.is=1:1)
-MTC_coda<-read.table('C:/Users/tp994/Downloads/R/coda1.txt', header=F)
+MTC_coda<-read.table('/coda1.txt', header=F)
 
 
 sims <- seq(1,Nsim,1)
@@ -213,7 +187,7 @@ for (i in 1:5000) {
   ProbMatrix[i,2] <- MTC_coda[i + 60000, 2]
 
   ProbMatrix[i,3] <- MTC_coda[i + 65000, 2]
-  ProbMatrix[i,4] <- MTC_coda[i + 125000, 2] ## SS
+  ProbMatrix[i,4] <- MTC_coda[i + 125000, 2] ## SSB
   ProbMatrix[i,5] <- 1  ## HH
   ProbMatrix[i,6] <- MTC_coda[i + 135000, 2] ### paste
   ProbMatrix[i,7] <- MTC_coda[i + 155000, 2] ## 2LB
@@ -304,14 +278,6 @@ for(l in 1:100) {
 	ProbMatrix <- cbind(ProbMatrix, u_pop[,l])
   colnames(ProbMatrix)[ncol(ProbMatrix)] <- paste("u_pop",l,sep="")
 }
-
-#mortutil_data <- read.table('C:/Users/tp994/Downloads/R/V4_DAM_mortutildata_scen1_v3.txt', header=T, sep="\t", quote="\"", dec=".",
-  #                          fill=T, na.strings=c(""), as.is=1:3)
-#for(l in 1:100) {
-#  u_pop[,l] <-rnorm(Nsim,mortutil_data[l,"mnu_pop"], mortutil_data[l,"u_pop.se"])
-#  ProbMatrix <- cbind(ProbMatrix, u_pop[,l])
-#  colnames(ProbMatrix)[ncol(ProbMatrix)] <- paste("u_pop",l,sep="")
-#}
 
 
 #ProbMatrix1 <- colMeans(ProbMatrix)
@@ -567,7 +533,7 @@ for (p in 1:P) {
 	  cost[c,15,p]<- 0
     cost[c,14,p]<- input[paste("nursev",p,sep="")] *input[paste("nurse_dur",p,sep="")]*c_nurse[,p]/60 
     + input[paste("t_dur",p,sep="")]  + input["GP_home"] * c_GP_home + input["GP_clinic"] * c_GP_clinic + input["Outpts"] * c_Outpts + 
-      input["hospv"] * c_hospv # +  input["hospstay"] * c_hospstay 
+      input["hospv"] * c_hospv +  input["hospstay"] * c_hospstay 
     
     }
   }
@@ -616,14 +582,6 @@ inc_C[7] <- 0
 inc_U[7] <- 0
 INMB[7] <- 0
 
-#icer[1] <- 0
-#icer[2] <- (mean_C[2]-mean_C[7])/(mean_U[2] - mean_U[7])
-#icer[3] <- 0
-#icer[4] <- (mean_C[4]-mean_C[7])/(mean_U[4] - mean_U[7])
-#icer[5] <- (mean_C[5]-mean_C[7])/(mean_U[5] - mean_U[7])
-#icer[6] <- (mean_C[6]-mean_C[7])/(mean_U[6] - mean_U[7])
-#icer[7] <- 0
-
 for (p in 1:7){
   NMB[p] <- mean_U[p]*threshold-mean_C[p]
 }
@@ -639,7 +597,6 @@ Nsim1<-5000
 
 system.time(CE_out <- sapply(1:Nsim1,CEmodelSA))
 #CE_out
-#save.image("C:/Users/tp994/Downloads/R/V6_test.RData")
 
 x<-rowMeans(CE_out)
 
